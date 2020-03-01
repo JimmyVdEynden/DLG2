@@ -1,0 +1,161 @@
+---
+title: "High risk 11q neuroblastoma cases and oncogenic ALK signaling curbing the DLG2 tumor suppressor to promote an undifferentiated state in neuroblastoma"
+author: Jimmy Van den Eynden
+output: 
+  html_notebook:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+---
+
+This notebook contains high level information on the bioinformatics pipeline that was used to the RNA-Seq, proteomics and bridge gene analysis reported in **Siaw JT, Javanmardi N, Van den Eynden J, Lind DE, Fransson S, Djos A, Sjöberg RM, Martinez-Monleon A, Östensson M, Carén H, Beiske K, Bergerall A, Noguera R, Lai WY, Kogner P, Palmer RH, Hallberg B and Martinsson T.High risk 11q neuroblastoma cases and oncogenic ALK signaling curbing the DLG2 tumor suppressor to promote an undifferentiated state in neuroblastoma. 2020.**
+
+# Environment 
+
+Analysis was performed in a Conda environment. See **DLG2.yml** for details. **scripts/Rpacks** describes R packages that were installed seperately.
+
+# Data
+
+## Raw data
+
+RNA-Seq data (fastq files, referred to in raw/) are available at ArrayExpress (www.ebi.ac.uk/arrayexpress/) accession no. *E-MTAB-8657*
+
+## Processed data
+
+Processed data (referred to in data/) are available at Zenodo ...:
+  - Sample info: *sample_info.rds*
+  - RNA-Seq normalized counts: *DLG2_normalized counts.rds* 
+  - RNA-Seq DE results: *DLG2_diff_expression_resuls.rds* 
+  - HGNC ENSG mapping table: *ENSG_HGNC_map_table.rds*
+  - Proteomics DE results: *DLG2_diff_expression_proteomics_results* 
+
+## Downloaded data
+
+The following data were downloaded from external sources:
+- MSigDB V6.2
+- MES/ADRN marker genes from Van Groningen et al., 2017
+- Bridge genes from Furlan et al., 2017
+- Transcriptoion factor target interaction data from regNetwork
+
+Download scripts are provided under scripts/downloads/ in the corresponding folders.
+
+# Data processing
+
+## Sample information
+
+* Sample information saved as *data/sample_info.rds*
+
+```{r}
+  source("scripts/get_sample_info.R")
+```
+
+## RNA-Seq (alignment & quantification)
+
+* Alignment: hisat2 on grch38
+    + Alignment efficiency log saved in *raw/hisat2_log/*
+    + Bam statistics are saved in *raw/bam_stat/*
+
+* Quantification: htseq-count, genes annotated using gencode29
+    + Log saved in *raw/htseq_log/*
+
+```{bash, eval=F}
+  scripts/other/process_fastq.sh
+```
+
+### Check alignment efficiency
+
+Extract from *raw/hisat2_log/* and save as *results/data/alignment_summary.txt*
+
+```{bash}
+  scripts/other/alignment_summary.sh
+```
+
+```{r}
+  align_summ<- read.table("results/data/alignment_summary.txt")
+  cat("Mean alignment efficiency (min-max):", mean(align_summ[,2]),"(",min(align_summ[,2]),"-",max(align_summ[,2]),")")
+```
+
+## Create mapping file for HGNC names
+
+File saved as *data/ENSG_HGNC_map_table.rds*
+
+```{r}
+  source("scripts/get_gencode29_HGNC_names.R")
+```
+
+# Analysis
+
+## RNA-Seq Diff expression analysis using DESeq2
+
+Output for all conditions/comparisons saved to:
+
+* *data/DLG2_diff_expression_resuls.rds* for differential expression analysis
+* *data/DLG2_normalized counts.rds* for normalized counts for each condition
+
+Excel tables generated with all results: 
+
+* *results/tables/DLG2_diff_expression_resuls.xlsx*
+* *results/tables/DLG2_normalized counts.xlsx*
+
+```{r}
+  source("scripts/DESeq2_analysis.R")
+```
+
+## Proteomics
+
+Proteomics data were quantified at Proteomics core facility. 
+
+Output for all conditions/comparisons saved to:
+
+* *data/DLG2_prot.rds* for normalized counts (performed by Proteomics core facility)
+* *data/DLG2_diff_expression_proteomics_results.rds* for differential expression analysis
+
+Excel tables generated with DE results: 
+
+* *results/tables/DLG2_diff_expression_proteomics_results.xlsx*
+
+```{r}
+  source("scripts/proteomics_process.R")
+```
+
+# Manuscript
+
+## Bridge gene analysis
+```{r}
+source("scripts/manuscript_bridge.R")
+```
+
+## Vulcano plot DLG2
+```{r}
+source("scripts/manuscript_vulcano.R")
+```
+
+## Heatmap
+```{r}
+source("scripts/manuscript_heatmap.R")
+```
+
+## GSEA
+
+### Analysis
+
+```{r}
+source("scripts/manuscript_GSEA.R")
+```
+
+### Plot
+
+```{r}
+source("scripts/manuscript_GSEA_plot.R")
+```
+
+## MES/ADRN differentiation analysis
+```{r}
+source("scripts/manuscript_diff_scores.R")
+```
+
+## Proteomics
+```{r}
+source("scripts/manuscript_proteomics.R")
+```
+

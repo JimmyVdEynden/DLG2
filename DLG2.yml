@@ -1,0 +1,11 @@
+channels:
+- conda-forge
+- bioconda
+dependencies:
+- r-base=3.6.1
+- r-essentials=3.6.0
+- perl-env=1.04
+- bioconductor-deseq2=1.24.0
+- r-svglite=1.2.2
+- r-writexls=5.0.0
+# - bioconductor-biomart=2.42.0 # Install as R package directly to avoid conda conflicts!
