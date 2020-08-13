@@ -3,7 +3,6 @@
 ##############################
 
 source("scripts/functions/do_GSEA2.R")
-# load("~/downloads/data/MSigDB/MSigDB_v62.RData")
 load("downloads/mSigDB/v62/MSigDB_v62.RData")
 results_diff_expr<- readRDS("data/DLG2_diff_expression_results.rds")
 

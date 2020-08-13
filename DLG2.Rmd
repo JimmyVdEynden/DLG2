@@ -1,5 +1,5 @@
 ---
-title: "High risk 11q neuroblastoma cases and oncogenic ALK signaling curbing the DLG2 tumor suppressor to promote an undifferentiated state in neuroblastoma"
+title: "11q deletion or ALK activity curbs DLG2 expression to maintain an undifferentiated state in neuroblastoma"
 author: Jimmy Van den Eynden
 output: 
   html_notebook:
@@ -8,11 +8,11 @@ output:
     toc_float: yes
 ---
 
-This notebook contains high level information on the bioinformatics pipeline that was used to the RNA-Seq, proteomics and bridge gene analysis reported in **Siaw JT, Javanmardi N, Van den Eynden J, Lind DE, Fransson S, Djos A, Sjöberg RM, Martinez-Monleon A, Östensson M, Carén H, Beiske K, Bergerall A, Noguera R, Lai WY, Kogner P, Palmer RH, Hallberg B and Martinsson T.High risk 11q neuroblastoma cases and oncogenic ALK signaling curbing the DLG2 tumor suppressor to promote an undifferentiated state in neuroblastoma. 2020.**
+This notebook contains high level information on the bioinformatics pipeline that was used for the RNA-Seq, proteomics and bridge gene analysis reported in **Siaw JT, Javanmardi N, Van den Eynden J, Lind DE, Fransson S, Marinez-Monleon A,  Djos A, Sjöberg RM, Östensson M, Carén H, Troen G, Beiske K, Bergegall A, Noguera R, Lai WY, Kogner P, Palmer RH, Hallberg B and Martinsson T. 11q deletion or ALK activity curbs DLG2 expression to maintain an undifferentiated state in neuroblastoma. Cell Reports, 2020.**
 
 # Environment 
 
-Analysis was performed in a Conda environment. See **DLG2.yml** for details. **scripts/Rpacks** describes R packages that were installed seperately.
+Analysis was performed in a Conda environment. See **DLG2.yml** for details. **scripts/Rpacks** describes R packages that were installed separately.
 
 # Data
 
@@ -22,20 +22,22 @@ RNA-Seq data (fastq files, referred to in raw/) are available at ArrayExpress (w
 
 ## Processed data
 
-Processed data (referred to in data/) are available at Zenodo ...:
-  - Sample info: *sample_info.rds*
-  - RNA-Seq normalized counts: *DLG2_normalized counts.rds* 
-  - RNA-Seq DE results: *DLG2_diff_expression_resuls.rds* 
-  - HGNC ENSG mapping table: *ENSG_HGNC_map_table.rds*
-  - Proteomics DE results: *DLG2_diff_expression_proteomics_results* 
+Processed data (referred to in data/) are available at Zenodo 10.5281/zenodo.3692759:
+
+- Sample info: *sample_info.rds*
+- RNA-Seq normalized counts: *DLG2_normalized counts.rds* 
+- RNA-Seq DE results: *DLG2_diff_expression_results.rds* 
+- HGNC ENSG mapping table: *ENSG_HGNC_map_table.rds*
+- Proteomics DE results: *DLG2_diff_expression_proteomics_results* 
 
 ## Downloaded data
 
 The following data were downloaded from external sources:
+
 - MSigDB V6.2
 - MES/ADRN marker genes from Van Groningen et al., 2017
 - Bridge genes from Furlan et al., 2017
-- Transcriptoion factor target interaction data from regNetwork
+- Transcription factor target interaction data from regNetwork
 
 Download scripts are provided under scripts/downloads/ in the corresponding folders.
 
@@ -46,7 +48,7 @@ Download scripts are provided under scripts/downloads/ in the corresponding fold
 * Sample information saved as *data/sample_info.rds*
 
 ```{r}
-  source("scripts/get_sample_info.R")
+source("scripts/get_sample_info.R")
 ```
 
 ## RNA-Seq (alignment & quantification)
@@ -80,30 +82,31 @@ Extract from *raw/hisat2_log/* and save as *results/data/alignment_summary.txt*
 File saved as *data/ENSG_HGNC_map_table.rds*
 
 ```{r}
-  source("scripts/get_gencode29_HGNC_names.R")
+ source("scripts/get_gencode29_HGNC_names.R")
 ```
 
-# Analysis
+# DE Analysis
 
 ## RNA-Seq Diff expression analysis using DESeq2
 
 Output for all conditions/comparisons saved to:
 
-* *data/DLG2_diff_expression_resuls.rds* for differential expression analysis
+* *data/DLG2_diff_expression_results.rds* for differential expression analysis
 * *data/DLG2_normalized counts.rds* for normalized counts for each condition
 
 Excel tables generated with all results: 
 
-* *results/tables/DLG2_diff_expression_resuls.xlsx*
+* *results/tables/DLG2_diff_expression_results.xlsx*
 * *results/tables/DLG2_normalized counts.xlsx*
 
 ```{r}
-  source("scripts/DESeq2_analysis.R")
+ source("scripts/DESeq2_analysis.R")
 ```
+
 
 ## Proteomics
 
-Proteomics data were quantified at Proteomics core facility. 
+Proteomics data were quantified at GU Proteomics core facility. We worked directly with quantified data. Raw proteomics data availalble at ProteomeXchange  Consortium  via  the  PRIDE  partner  repository  with  the dataset identifier *PXD017946*.
 
 Output for all conditions/comparisons saved to:
 
@@ -115,8 +118,9 @@ Excel tables generated with DE results:
 * *results/tables/DLG2_diff_expression_proteomics_results.xlsx*
 
 ```{r}
-  source("scripts/proteomics_process.R")
+source("scripts/proteomics_process.R")
 ```
+
 
 # Manuscript
 
@@ -150,6 +154,7 @@ source("scripts/manuscript_GSEA_plot.R")
 ```
 
 ## MES/ADRN differentiation analysis
+
 ```{r}
 source("scripts/manuscript_diff_scores.R")
 ```
@@ -157,5 +162,10 @@ source("scripts/manuscript_diff_scores.R")
 ## Proteomics
 ```{r}
 source("scripts/manuscript_proteomics.R")
+```
+
+## Create summary table
+```{r}
+source("scripts/manuscript_summary_table.R")
 ```
 

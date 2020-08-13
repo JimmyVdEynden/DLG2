@@ -11,7 +11,6 @@ DLG2_normalized_counts <- readRDS("data/DLG2_normalized_counts.rds")
 results_diff_expr<- readRDS(file = "data/DLG2_diff_expression_results.rds")
 
 # Load MES and ADRN diff markers as published by V. Groningen et al.
-# load("data/diff_markers.RData")
 load("downloads/pub/van_groningen_2017/vGron_diff_markers.RData")
 
 # 1) Determine enrichment marker

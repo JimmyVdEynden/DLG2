@@ -117,7 +117,7 @@
   
   # Load R2 platform genes
   # Data not downloadable? 
-  # Manual curation by Bengt & Joakim + double check afterwards by Joachim
+  # Manual curation performed by Bengt & Joakim + double check afterwards by Joachim
   R2<- cbind(bridge_genes,c(
     0,
     1,

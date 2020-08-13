@@ -31,37 +31,14 @@ for(i in 1:2){
   text(res_proc["DLG2","logFC"],-log10(res_proc["DLG2","pvalue"]),"DLG2",adj = c(0,0),xpd=NA,col="purple")  
   
   # Plot diff markers
-  diff_markers<- c("NEFM","NEFL","NEFH","RET","NRTK1","MAP2","RBFOX3","NRCAM","ASCL1","MYCN") # Manually defined
-  # load("data/diff_markers.RData")
-  # diff_markers<- MES
-  # diff_markers<- ADRN
+  diff_markers<- c("NEFM","NEFL","NEFH","RET","NRTK1","MAP2","RBFOX3","NRCAM","ASCL1","MYCN","VGF", "SGK1", "EGR1", "NTRK1", "DLGAP2") # Manually defined
   idx_diff_sign_marker<- which(rownames(res_proc)%in%diff_markers)
-  # idx_diff_sign_marker<- intersect(c(idx_up_sign,idx_down_sign),idx_diff_sign_marker)
   points(res_proc[idx_diff_sign_marker,"logFC"],-log10(res_proc[idx_diff_sign_marker,"pvalue"]),pch=16,col=rgb(1,0,0,1))
   for(gene in diff_markers){
     if(!gene%in%rownames(res_proc)) next
     text(res_proc[gene,"logFC"],-log10(res_proc[gene,"pvalue"]),gene,adj = c(0,0),xpd=NA,col="red")  
   }
-  # sort(rownames(res_proc)[idx_diff_sign_marker])
-  # # ADRN
-  # # "ASCL1"    "BMP7"     "CELF2"    "CHGA"     "CXCR4"    "DACH1"    "GABRB3"  
-  # # "GDAP1L1"  "INSM1"    "KIF1A"    "LMO3"     "MARCH11"  "NCAN"     "NEFM"    
-  # # "NMNAT2"   "NPY"      "NRCAM"    "PRPH"     "SV2C"     "TACC2"    "TBC1D30" 
-  # # "TMEM178B" "TOX2"     "UNC79"   
-  # # MES
-  # # "BGN"      "CCDC80"   "COL4A1"   "COL4A2"   "COL6A3"   "CRABP2"   "CXCL12"  
-  # # "EGR1"     "F2RL2"    "GPX8"     "LATS2"    "LHX8"     "LPP"      "MGST1"   
-  # # "PDE7B"    "PTPRK"    "SEMA3F"   "SERPINE2" "SGK1"     "SPRY1"   
-  
-  # identify(res_proc[,"log2FoldChange"],-log10(res_proc[,"pvalue"]),rownames(r1es_proc))
-  # res_proc_sel<- res_proc[order(res_proc[,"pvalue"]),][1:20,]
-  # for(i in 1:20){
-  #   text(res_proc_sel[i,"log2FoldChange"],-log10(res_proc_sel[i,"pvalue"]),rownames(res_proc_sel)[i],cex=0.5,adj = c(0.5,i%%2),xpd=NA)
-  # }
-  # library(plotrix)
-  # spread.labels(res_proc_sel[,"log2FoldChange"],-log10(res_proc_sel[,"pvalue"]),rownames(res_proc_sel),xpd=NA)
   legend("topleft",legend = c(paste0(length(idx_up_sign)," upregulated"),paste0(length(idx_down_sign))," downregulated"),bty="n",text.col="blue")
-  # legend("topright",legend = paste0(length(idx_up_sign)," upregulated"),bty="n",text.col="blue")
   dev.off()  
 }
 
@@ -74,7 +51,6 @@ library(gplots) # Heatmap 2
 selected_genes<- NULL
 for(comparison in names(results_diff_expr)){
   res_proc<- results_diff_expr[[comparison]]
-  # res_proc<- res_proc[res_proc$baseMean>10,] # Select minimal expression
   idx_sign<- which(-log10(res_proc[,"pvalue"])>2) 
   idx_up<- which(res_proc[,"logFC"]>1)
   idx_down<- which(res_proc[,"logFC"]<(-1)) 
@@ -100,10 +76,9 @@ data[data<=-3]<--3
 # Plot dummy heatmap to define clusters afterwars
 pdf(file = NULL)
 hm<- heatmap.2(data)
-# hm<- heatmap.2(data,hclustfun=function(x) hclust(x, method="ward.D2"))
 dev.off()
 
-# Get main clusters: set to 8 to define but redefine later
+# Get main clusters:
 n_classes<- 4
 clust_classes<- cutree(as.hclust(hm$rowDendrogram),n_classes)
 
@@ -114,9 +89,7 @@ sepline<- cumsum(table(factor(clust_classes[hm$rowInd],levels = rev(unique(clust
 for(i in 1:2){
   if(i==1) pdf("results/figs/manuscript_heatmap_proteomics.pdf")
   else svglite::svglite("results/figs/manuscript_heatmap_proteomics.svg")
-  # hm<- heatmap.2(data,rowsep =sepline,RowSideColors= rainbow(n_classes)[clust_classes],sepcolor="black",sepwidth=c(3,3),col=bluered(75),symkey=TRUE, key=TRUE, keysize=1, trace="none",scale="none",density.info='none', cexRow=0.7, cexCol=0.5,key.title = "logFC")
   hm<- heatmap.2(data,rowsep =sepline,RowSideColors= rainbow(n_classes)[clust_classes],sepcolor="black",sepwidth=c(0.5,0.5),col=bluered(75),symkey=TRUE, key=TRUE, keysize=1, trace="none",scale="none",density.info='none', cexRow=0.5, cexCol=0.5,key.title = "logFC",Colv = F,dendrogram="row")
-  # hm<- heatmap.2(data,rowsep =sepline,RowSideColors= rainbow(n_classes)[clust_classes],sepcolor="black",sepwidth=c(3,3),col=bluered(75),symkey=TRUE, key=TRUE, keysize=1, trace="none",scale="none",density.info='none', cexRow=0.7, cexCol=0.5,key.title = "logFC",hclustfun=function(x) hclust(x, method="ward.D2"))
   legend("topright",legend = paste("Cluster", 1:n_classes),fill = rainbow(n_classes),cex=0.5)
   dev.off()
 }
